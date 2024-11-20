@@ -37,31 +37,27 @@ public class Planificador {
         }
     }
 
-    // App.vista.actualizarVista(); // Actualizar vista al agregar un proceso
-
     public boolean ejecutar() {
         if (!colaTiempoReal.isEmpty()) {
             ejecutarProceso(colaTiempoReal.poll());
-            return false; // Aún quedan procesos por ejecutar
+            return false;
         } else if (!colaUsuario1.isEmpty()) {
             ejecutarProceso(colaUsuario1.poll());
-            return false; // Aún quedan procesos por ejecutar
+            return false;
         } else if (!colaUsuario2.isEmpty()) {
             ejecutarProceso(colaUsuario2.poll());
-            return false; // Aún quedan procesos por ejecutar
+            return false;
         } else if (!colaUsuario3.isEmpty()) {
             ejecutarProceso(colaUsuario3.poll());
-            return false; // Aún quedan procesos por ejecutar
+            return false;
         }
 
-        // Si todas las colas están vacías, significa que todos los procesos se
-        // ejecutaron
         return true;
     }
 
     private void ejecutarProceso(Proceso proceso) {
         proceso.setEstado("Intentando ejecutar");
-        App.vista.actualizarVista();
+        VentanaMenu.vista.actualizarVista();
 
         // Intentar asignar memoria
         List<Integer> bloquesAsignados = gestorMemoria.asignarMemoria(proceso.getMemoriaRequerida());
@@ -73,35 +69,32 @@ public class Planificador {
             // Actualizar el estado del proceso
             proceso.setEstado("Ejecutando");
             proceso.setBloquesAsignados(bloquesAsignados);
-            App.vista.actualizarVista();
+            VentanaMenu.vista.actualizarVista();
 
-            // Bucle para ejecutar el proceso mientras tenga tiempo de CPU restante
             while (proceso.getTiempoCPURestante() > 0) {
-                // Reducir el tiempo de CPU restante
+
                 proceso.reducirTiempoCPU();
-                App.vista.actualizarVista();
+                VentanaMenu.vista.actualizarVista();
 
                 try {
                     // Simular el paso del tiempo
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Restaurar el estado de interrupción
+                    Thread.currentThread().interrupt();
                     e.printStackTrace();
                 }
             }
 
-            // El proceso ha terminado
             proceso.setEstado("Terminado");
             gestorMemoria.liberarMemoria(proceso.getBloquesMemoria());
-            proceso.getBloquesMemoria().clear(); // Limpiar los bloques asignados
+            proceso.getBloquesMemoria().clear();
             gestorRecursos.liberarRecursos(proceso);
-            App.vista.actualizarVista(); // Reflejar cambios
+            VentanaMenu.vista.actualizarVista();
         } else {
-            // No se pudieron asignar recursos o memoria, volver a encolar
+
             proceso.setEstado("En espera");
             agregarProceso(proceso);
 
-            // Liberar recursos asignados parcialmente si corresponde
             if (!bloquesAsignados.isEmpty()) {
                 gestorMemoria.liberarMemoria(bloquesAsignados);
             }

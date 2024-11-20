@@ -138,7 +138,7 @@ public class Tabla {
                     super.updateItem(item, empty);
 
                     if (item != null) {
-                        // Cambiar el color de toda la fila según el estado del proceso
+
                         switch (item.getEstado()) {
                             case "Ejecutando":
                                 setStyle("-fx-background-color: lightgreen;");
@@ -154,23 +154,19 @@ public class Tabla {
                                 break;
                         }
                     } else {
-                        setStyle(""); // Restaurar el estilo cuando la fila está vacía
+                        setStyle("");
                     }
                 }
             };
         });
 
-        // Asociar la lista observable a la tabla
         tableView.setItems(procesos);
     }
 
-    // Método para actualizar la tabla (esto lo hará automáticamente JavaFX si se
-    // modifica la ObservableList)
     public void updateTable() {
         tableView.refresh();
     }
 
-    // Getter para obtener la TableView en el controlador de la UI
     public TableView<Proceso> getTableView() {
         return tableView;
     }
